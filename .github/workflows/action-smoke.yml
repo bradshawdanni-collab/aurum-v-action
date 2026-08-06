@@ -1,0 +1,29 @@
+name: Action smoke test
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  docker-action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Action image
+        run: docker build -t aurum-v-action-test .
+
+      - name: Verify missing authorization fails closed
+        shell: bash
+        run: |
+          set +e
+          output="$(docker run --rm aurum-v-action-test 2>&1)"
+          code=$?
+          set -e
+          printf '%s\n' "$output"
+          test "$code" -ne 0
+          grep -q 'result: INVALID_ARTIFACT' <<<"$output"
+          grep -q 'denial-code: APPROVAL_BUNDLE_REQUIRED' <<<"$output"
