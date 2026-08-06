@@ -1,0 +1,43 @@
+name: AURUM-V Merge Gate
+description: Verify a signed AURUM-V merge authorization bundle inside a fail-closed Docker action.
+author: AURUM-V
+
+inputs:
+  approval-bundle:
+    description: Path to the signed approval bundle directory in the checked-out workspace.
+    required: true
+  expected-repository:
+    description: Exact owner/repository value expected in the verified approval.
+    required: false
+    default: ${{ github.repository }}
+  expected-pull-request-number:
+    description: Exact pull-request number expected in the verified approval.
+    required: false
+    default: ${{ github.event.pull_request.number }}
+  expected-head-sha:
+    description: Exact pull-request head commit SHA expected in the verified approval.
+    required: false
+    default: ${{ github.event.pull_request.head.sha }}
+
+outputs:
+  result:
+    description: Deterministic verification result, such as VERIFIED, REFUSED, TAMPERED, INVALID_SIGNATURE, or INVALID_ARTIFACT.
+  denial-code:
+    description: Controlled denial code when execution is not authorized; empty when verified.
+  decision-id:
+    description: Decision identifier extracted from the verified approval artifact.
+  message:
+    description: Non-sensitive deterministic result message.
+
+runs:
+  using: docker
+  image: Dockerfile
+  args:
+    - ${{ inputs.approval-bundle }}
+    - ${{ inputs.expected-repository }}
+    - ${{ inputs.expected-pull-request-number }}
+    - ${{ inputs.expected-head-sha }}
+
+branding:
+  icon: shield
+  color: yellow
