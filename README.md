@@ -1,5 +1,7 @@
 # AURUM-V Merge Gate
 
+[![External installation proof](https://github.com/bradshawdanni-collab/aurum-v-action-demo/actions/workflows/aurum-v-demo.yml/badge.svg)](https://github.com/bradshawdanni-collab/aurum-v-action-demo/actions/workflows/aurum-v-demo.yml)
+
 A fail-closed Docker-based GitHub Action that verifies a signed AURUM-V approval bundle and binds it to the exact repository, pull request and head commit SHA.
 
 ## Quick start
@@ -17,7 +19,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - id: aurum
-        uses: bradshawdanni-collab/aurum-v-action@v1
+        uses: bradshawdanni-collab/aurum-v-action@v1.0.0
         with:
           approval-bundle: path/to/signed-approval
           expected-repository: ${{ github.repository }}
@@ -37,6 +39,13 @@ approval.sig
 public_key.pem
 SHA256SUMS
 ```
+
+## External installation proof
+
+A separate public repository installs the Marketplace release exactly as a consumer would, generates an ephemeral demo-only Ed25519 key, verifies a valid signed bundle as `VERIFIED`, then modifies the artifact and confirms the Action fails closed with `TAMPERED`.
+
+- Demo repository: [bradshawdanni-collab/aurum-v-action-demo](https://github.com/bradshawdanni-collab/aurum-v-action-demo)
+- Proof workflow: [AURUM-V external installation proof](https://github.com/bradshawdanni-collab/aurum-v-action-demo/actions/workflows/aurum-v-demo.yml)
 
 ## Inputs
 
@@ -70,6 +79,12 @@ The Action:
 It does not replace branch protection or grant merge authority. Protect signing keys, configure required checks, and pin immutable versions where appropriate.
 
 ## Version pinning
+
+Use the published release:
+
+```yaml
+uses: bradshawdanni-collab/aurum-v-action@v1.0.0
+```
 
 Use the major tag for compatible updates:
 
