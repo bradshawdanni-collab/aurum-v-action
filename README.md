@@ -1,5 +1,7 @@
 # AURUM-V Merge Gate
 
+> **Canonical Action authority:** `bradshawdanni-collab/aurum-v-action` is the sole current public AURUM-V GitHub Action distribution repository. Historical Action releases under `bradshawdanni-collab/aurum-v` are legacy provenance only and are not the current installation authority.
+
 [![External installation proof](https://github.com/bradshawdanni-collab/aurum-v-action-demo/actions/workflows/aurum-v-demo.yml/badge.svg)](https://github.com/bradshawdanni-collab/aurum-v-action-demo/actions/workflows/aurum-v-demo.yml)
 
 A fail-closed Docker-based GitHub Action that verifies a signed AURUM-V approval bundle and binds it to the exact repository, pull request and head commit SHA.
