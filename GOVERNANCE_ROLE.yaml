@@ -1,0 +1,22 @@
+schema_version: "1.0"
+repository: "bradshawdanni-collab/aurum-v-action"
+repository_role: "public-github-action-distribution"
+authoritative_for:
+  - "current public AURUM-V GitHub Action distribution"
+  - "published GitHub Action installation references"
+  - "Action packaging and consumer-facing Action documentation"
+not_authoritative_for:
+  - "admissibility-state definitions"
+  - "kernel invariants"
+  - "state-transition contracts"
+  - "execution authority outside verified Action output"
+  - "application or Base44 product authority"
+  - "reviewer interface authority"
+  - "domain evidence truth"
+  - "independent certification"
+canonical_upstream:
+  repository: "bradshawdanni-collab/aurum-v-kernel"
+required_reviews:
+  - "constitutional owner"
+  - "Action implementation reviewer"
+status: "active"
