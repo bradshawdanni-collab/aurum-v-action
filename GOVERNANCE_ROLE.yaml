@@ -16,6 +16,8 @@ not_authoritative_for:
   - "independent certification"
 canonical_upstream:
   repository: "bradshawdanni-collab/aurum-v-kernel"
+  version: "1.0.1"
+  commit: "ecb6e7f5bb9686ced5f583ab72a73fc613633ad2"
 required_reviews:
   - "constitutional owner"
   - "Action implementation reviewer"
