@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from aurum_v.verification.verify_artifact import ResultClass, verify_artifact
+from aurum_v.verification.verify_recovery_spec import verify_frozen_recovery_spec
 
 
 def clean(value: Any) -> str:
@@ -45,6 +46,11 @@ def fail(result: str, denial_code: str, message: str, decision_id: str = "", exi
 
 bundle_arg, expected_repository, expected_pr_number, expected_head_sha = sys.argv[1:5]
 workspace = Path(os.environ.get("GITHUB_WORKSPACE", "/github/workspace")).resolve()
+
+try:
+    verify_frozen_recovery_spec()
+except RuntimeError as exc:
+    raise SystemExit(fail("REFUSED", "RECOVERY_SPEC_IDENTITY_MISMATCH", clean(exc)))
 
 if not bundle_arg:
     raise SystemExit(fail("INVALID_ARTIFACT", "APPROVAL_BUNDLE_REQUIRED", "approval bundle input is required"))
