@@ -1,0 +1,20 @@
+{
+  "record_type": "AURUMV_IMMUTABLE_SPECIFICATION_PROVENANCE",
+  "filename": "AURUMV_RECOVERY_SPECIFICATION_FROZEN.txt",
+  "byte_count": 7814,
+  "sha256": "d422b30ec51a95fd515c7e1a069cd223b0a8fce2313366921b1816b5678241f1",
+  "freeze_timestamp_utc": "2026-09-07T10:39:19Z",
+  "specification_identifier": "AURUMV_RECOVERY_SPECIFICATION",
+  "version_label": "SEMANTICALLY_FINAL",
+  "freeze_state": "FROZEN",
+  "serialization": {
+    "encoding": "UTF-8",
+    "bom": "ABSENT",
+    "line_endings": "LF",
+    "final_newline": "PRESENT",
+    "trailing_spaces_or_tabs": "ABSENT"
+  },
+  "invariant": "SPEC_SHA256 = SHA256(exact_frozen_byte_stream)",
+  "source_mutability": "IMMUTABLE",
+  "successor_policy": "FUTURE_SEMANTIC_CHANGES_REQUIRE_NEW_ARTIFACT_IDENTIFIER_AND_HASH"
+}
