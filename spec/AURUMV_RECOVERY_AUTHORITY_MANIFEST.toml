@@ -1,0 +1,12 @@
+[frozen_spec]
+identifier      = "AURUMV_RECOVERY_SPECIFICATION"
+version_label   = "SEMANTICALLY_FINAL"
+freeze_state    = "FROZEN"
+filename        = "AURUMV_RECOVERY_SPECIFICATION_FROZEN.txt"
+byte_count      = 7814
+sha256          = "d422b30ec51a95fd515c7e1a069cd223b0a8fce2313366921b1816b5678241f1"
+freeze_timestamp_utc = "2026-09-07T10:39:19Z"
+bundle_sha256   = "174f772c4a63a40a5339bbdd0aa4177db1422097fee65e342d8a2f2733b2aa8e"
+authority_state = "ESTABLISHED"
+implementation_authorised = true
+downstream_generation_authorised = true
