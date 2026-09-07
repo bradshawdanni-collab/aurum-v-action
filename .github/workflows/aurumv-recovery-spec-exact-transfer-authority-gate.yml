@@ -1,0 +1,104 @@
+name: AURUM-V recovery spec exact-transfer authority gate
+
+on:
+  push:
+    paths:
+      - "spec/AURUMV_RECOVERY_SPECIFICATION_FROZEN.txt"
+      - "spec/AURUMV_RECOVERY_AUTHORITY_MANIFEST.toml"
+      - ".github/workflows/aurumv-recovery-spec-exact-transfer-authority-gate.yml"
+  pull_request:
+    paths:
+      - "spec/AURUMV_RECOVERY_SPECIFICATION_FROZEN.txt"
+      - "spec/AURUMV_RECOVERY_AUTHORITY_MANIFEST.toml"
+      - ".github/workflows/aurumv-recovery-spec-exact-transfer-authority-gate.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  recovery-spec-authority-manifest-conformance:
+    name: recovery-spec-authority-manifest-conformance
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate authority manifest schema and frozen bindings
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import tomllib
+
+          manifest_path = Path("spec/AURUMV_RECOVERY_AUTHORITY_MANIFEST.toml")
+          manifest = tomllib.loads(manifest_path.read_text(encoding="utf-8"))
+          frozen = manifest.get("frozen_spec")
+          assert isinstance(frozen, dict), "missing [frozen_spec] table"
+
+          expected = {
+              "identifier": "AURUMV_RECOVERY_SPECIFICATION",
+              "version_label": "SEMANTICALLY_FINAL",
+              "freeze_state": "FROZEN",
+              "filename": "AURUMV_RECOVERY_SPECIFICATION_FROZEN.txt",
+              "byte_count": 7814,
+              "sha256": "d422b30ec51a95fd515c7e1a069cd223b0a8fce2313366921b1816b5678241f1",
+              "freeze_timestamp_utc": "2026-09-07T10:39:19Z",
+              "bundle_sha256": "174f772c4a63a40a5339bbdd0aa4177db1422097fee65e342d8a2f2733b2aa8e",
+              "authority_state": "ESTABLISHED",
+              "implementation_authorised": True,
+              "downstream_generation_authorised": True,
+          }
+
+          assert set(frozen) == set(expected), (set(frozen), set(expected))
+          for key, value in expected.items():
+              assert frozen[key] == value, f"{key}: {frozen[key]!r} != {value!r}"
+
+          print("AUTHORITY_MANIFEST_CONFORMANCE=PASS")
+          PY
+
+  recovery-spec-authority-established:
+    name: recovery-spec-authority-established
+    needs: recovery-spec-authority-manifest-conformance
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify exact frozen bytes and authority state
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          import tomllib
+
+          spec_path = Path("spec/AURUMV_RECOVERY_SPECIFICATION_FROZEN.txt")
+          manifest_path = Path("spec/AURUMV_RECOVERY_AUTHORITY_MANIFEST.toml")
+
+          data = spec_path.read_bytes()
+          frozen = tomllib.loads(manifest_path.read_text(encoding="utf-8"))["frozen_spec"]
+
+          expected_size = 7814
+          expected_sha256 = "d422b30ec51a95fd515c7e1a069cd223b0a8fce2313366921b1816b5678241f1"
+          actual_sha256 = hashlib.sha256(data).hexdigest()
+
+          assert len(data) == expected_size, (len(data), expected_size)
+          assert actual_sha256 == expected_sha256, (actual_sha256, expected_sha256)
+          assert frozen["byte_count"] == expected_size
+          assert frozen["sha256"] == expected_sha256
+          assert frozen["authority_state"] == "ESTABLISHED"
+          assert frozen["implementation_authorised"] is True
+          assert frozen["downstream_generation_authorised"] is True
+
+          assert not data.startswith(b"\xef\xbb\xbf"), "UTF-8 BOM present"
+          assert b"\r" not in data, "CR byte present"
+          assert all(not line.endswith((b" ", b"\t")) for line in data.split(b"\n")), "trailing whitespace present"
+          assert data.endswith(b"\n") and not data.endswith(b"\n\n"), "final LF policy violated"
+
+          print(f"BYTE_COUNT={len(data)}")
+          print(f"SHA256={actual_sha256}")
+          print("AUTHORITY_STATE=ESTABLISHED")
+          print("IMPLEMENTATION_AUTHORISED=true")
+          print("DOWNSTREAM_GENERATION_AUTHORISED=true")
+          print("RECOVERY_SPEC_AUTHORITY_ESTABLISHED=PASS")
+          PY
