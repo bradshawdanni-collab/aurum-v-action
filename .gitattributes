@@ -1,0 +1,4 @@
+# Preserve the byte-frozen recovery specification's LF-only serialization.
+spec/AURUMV_RECOVERY_SPECIFICATION_FROZEN.txt text eol=lf
+spec/derived/*.json text eol=lf
+spec/derived/*.md text eol=lf
