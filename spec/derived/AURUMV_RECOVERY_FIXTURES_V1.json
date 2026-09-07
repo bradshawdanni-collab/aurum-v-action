@@ -1,0 +1,57 @@
+{
+  "fixture_set_id": "AURUMV_RECOVERY_CONFORMANCE_FIXTURES_V1",
+  "derived_from_frozen_spec_filename": "AURUMV_RECOVERY_SPECIFICATION_FROZEN.txt",
+  "derived_from_frozen_spec_sha256": "d422b30ec51a95fd515c7e1a069cd223b0a8fce2313366921b1816b5678241f1",
+  "deterministic": true,
+  "production_secret_material": "ABSENT",
+  "vectors": {
+    "JCS_AAD_RAK_001": {
+      "metadata": {"authority_epoch":"epoch-0001","key_id":"11111111-1111-4111-8111-111111111111","ledger_genesis_id":"22222222-2222-4222-8222-222222222222","scheme_version":"1.0","secret_role":"RAK"},
+      "canonical_utf8_text": "{\"authority_epoch\":\"epoch-0001\",\"key_id\":\"11111111-1111-4111-8111-111111111111\",\"ledger_genesis_id\":\"22222222-2222-4222-8222-222222222222\",\"scheme_version\":\"1.0\",\"secret_role\":\"RAK\"}",
+      "canonical_utf8_hex": "7b22617574686f726974795f65706f6368223a2265706f63682d30303031222c226b65795f6964223a2231313131313131312d313131312d343131312d383131312d313131313131313131313131222c226c65646765725f67656e657369735f6964223a2232323232323232322d323232322d343232322d383232322d323232323232323232323232222c22736368656d655f76657273696f6e223a22312e30222c227365637265745f726f6c65223a2252414b227d",
+      "sha256": "6b1ec6840ba7e7c9c58c0396ef1999bad511159b1164e45a00754b4e095dfed4"
+    },
+    "HKDF_SHA256_RAK_001": {
+      "S_bytes_hex": "000000000000000000000000000000000000000000000000000000000000002a",
+      "salt_utf8": "AURUM-V-RECOVERY-TEST-SALT-v1",
+      "info_utf8": "AURUM-V/CIL-000/RAK/KEY-WRAP/v1",
+      "PRK_hex": "9d24f9e29f4ec6bb9e815153ce96b07efbc6033ef66af79b012d6508d853b870",
+      "KEK_hex": "bc1d0600de61d0f104c5aa82072bee9612d2dc2dce15ee01f0f8d4d16fa5de16",
+      "KEK_length_bytes": 32
+    },
+    "XCHACHA20_POLY1305_RAK_001": {
+      "profile": "crypto_aead_xchacha20poly1305_ietf",
+      "nonce_hex": "000102030405060708090a0b0c0d0e0f1011121314151617",
+      "plaintext_key_hex": "a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0",
+      "aad_hex": "7b22617574686f726974795f65706f6368223a2265706f63682d30303031222c226b65795f6964223a2231313131313131312d313131312d343131312d383131312d313131313131313131313131222c226c65646765725f67656e657369735f6964223a2232323232323232322d323232322d343232322d383232322d323232323232323232323232222c22736368656d655f76657273696f6e223a22312e30222c227365637265745f726f6c65223a2252414b227d",
+      "ciphertext_hex": "2258c53838b8e7d0ec910278d0f6ddccc12b75575cd0047f5a939909437444fe",
+      "tag_hex": "1b1f2fb16d2ced3f9a76d4f2ac5e6bd7",
+      "combined_ciphertext_tag_hex": "2258c53838b8e7d0ec910278d0f6ddccc12b75575cd0047f5a939909437444fe1b1f2fb16d2ced3f9a76d4f2ac5e6bd7",
+      "positive_decrypt_roundtrip": "PASS",
+      "wrong_aad_authentication": "REJECT"
+    },
+    "ED25519_SHARE_ENVELOPE_001": {
+      "custodian_seed_hex_TEST_ONLY": "0101010101010101010101010101010101010101010101010101010101010101",
+      "custodian_public_key_hex": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+      "encrypted_share_payload_hex": "555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555",
+      "encrypted_share_payload_sha256": "3e618007bcd9decb9affc0f30fde564ff6f8862a658f78b99cecf8bd5926d7cd",
+      "signing_object": {"metadata":{"authority_epoch":"epoch-0001","key_id":"11111111-1111-4111-8111-111111111111","ledger_genesis_id":"22222222-2222-4222-8222-222222222222","scheme_version":"1.0","secret_role":"RAK"},"encrypted_share_payload_sha256":"3e618007bcd9decb9affc0f30fde564ff6f8862a658f78b99cecf8bd5926d7cd"},
+      "signed_bytes_utf8_text": "{\"encrypted_share_payload_sha256\":\"3e618007bcd9decb9affc0f30fde564ff6f8862a658f78b99cecf8bd5926d7cd\",\"metadata\":{\"authority_epoch\":\"epoch-0001\",\"key_id\":\"11111111-1111-4111-8111-111111111111\",\"ledger_genesis_id\":\"22222222-2222-4222-8222-222222222222\",\"scheme_version\":\"1.0\",\"secret_role\":\"RAK\"}}",
+      "signed_bytes_hex": "7b22656e637279707465645f73686172655f7061796c6f61645f736861323536223a2233653631383030376263643964656362396166666330663330666465353634666636663838363261363538663738623939636563663862643539323664376364222c226d65746164617461223a7b22617574686f726974795f65706f6368223a2265706f63682d30303031222c226b65795f6964223a2231313131313131312d313131312d343131312d383131312d313131313131313131313131222c226c65646765725f67656e657369735f6964223a2232323232323232322d323232322d343232322d383232322d323232323232323232323232222c22736368656d655f76657273696f6e223a22312e30222c227365637265745f726f6c65223a2252414b227d7d",
+      "signature_hex": "32bf1e3f978ab576a32b777162331d8cba0c470ebee8b1425cf0a52459ffb7c4c7613a7ceafa301870e8fb33b806dd66b910fefd3f453438fc8e9b25eb113508",
+      "positive_verification": "PASS",
+      "mutated_message_verification": "REJECT"
+    }
+  },
+  "negative_cases": [
+    {"id":"N01","condition":"secret_role outside {RAK,SRK}","expected":"SCHEMA_REJECT"},
+    {"id":"N02","condition":"uppercase/non-hex payload digest","expected":"SCHEMA_REJECT"},
+    {"id":"N03","condition":"mutated signing object with original Ed25519 signature","expected":"SIGNATURE_REJECT"},
+    {"id":"N04","condition":"wrong JCS AAD during AEAD unwrap","expected":"AEAD_REJECT_AND_ZEROISE"},
+    {"id":"N05","condition":"new nonce generated during unwrap","expected":"PROHIBITED"},
+    {"id":"N06","condition":"secret-handle reference used after effective expiry","expected":"DESTROY_INTERNAL_HANDLE_AND_SILENCE"},
+    {"id":"N07","condition":"single-use handle reference replayed","expected":"REJECT_AND_SILENCE"},
+    {"id":"N08","condition":"threshold reconstruction succeeds but RECOVERY_AUTHORISED is false","expected":"DESTROY_INTERNAL_HANDLE_AND_SILENCE"},
+    {"id":"N09","condition":"frozen specification SHA-256 mismatch","expected":"FAIL_CLOSED_BEFORE_CONFORMANCE_OR_RECOVERY"}
+  ]
+}

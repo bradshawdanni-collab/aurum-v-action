@@ -1,0 +1,81 @@
+name: Recovery specification integrity
+
+on:
+  push:
+    paths:
+      - "spec/**"
+      - "src/aurum_v/verification/verify_recovery_spec.py"
+      - "scripts/verify_recovery_conformance.py"
+      - "Dockerfile"
+      - "entrypoint.sh"
+      - ".github/workflows/recovery-spec-integrity.yml"
+      - ".gitattributes"
+      - "CHANGELOG.md"
+  pull_request:
+    paths:
+      - "spec/**"
+      - "src/aurum_v/verification/verify_recovery_spec.py"
+      - "scripts/verify_recovery_conformance.py"
+      - "Dockerfile"
+      - "entrypoint.sh"
+      - ".github/workflows/recovery-spec-integrity.yml"
+      - ".gitattributes"
+      - "CHANGELOG.md"
+
+permissions:
+  contents: read
+
+jobs:
+  frozen-recovery-spec:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install conformance dependencies
+        run: |
+          python -m pip install --disable-pip-version-check \
+            "cryptography==50.0.0" \
+            "jsonschema==4.26.0" \
+            "PyNaCl==1.6.2"
+
+      - name: Verify exact frozen bytes
+        env:
+          PYTHONPATH: src
+        run: |
+          python -m aurum_v.verification.verify_recovery_spec
+
+      - name: Run derived schema and cryptographic fixtures
+        env:
+          PYTHONPATH: src
+        run: |
+          python scripts/verify_recovery_conformance.py
+
+      - name: Independently assert frozen digest and serialization
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+
+          path = Path("spec/AURUMV_RECOVERY_SPECIFICATION_FROZEN.txt")
+          data = path.read_bytes()
+          expected_size = 7814
+          expected_sha256 = "d422b30ec51a95fd515c7e1a069cd223b0a8fce2313366921b1816b5678241f1"
+
+          assert len(data) == expected_size, (len(data), expected_size)
+          assert hashlib.sha256(data).hexdigest() == expected_sha256
+          assert not data.startswith(b"\xef\xbb\xbf")
+          assert b"\r" not in data
+          assert all(not line.endswith((b" ", b"\t")) for line in data.split(b"\n"))
+          assert data.endswith(b"\n") and not data.endswith(b"\n\n")
+          print(f"BYTE_COUNT={len(data)}")
+          print(f"SHA256={hashlib.sha256(data).hexdigest()}")
+          print("SERIALIZATION=PASS")
+          PY
