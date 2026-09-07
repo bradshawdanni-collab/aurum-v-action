@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:aurum-v:recovery:specification:frozen:derived-schema:v1",
+  "title": "AURUM-V Frozen Recovery Specification - Derived Machine Schema",
+  "description": "Derived read-only schema. Authority source SHA-256: d422b30ec51a95fd515c7e1a069cd223b0a8fce2313366921b1816b5678241f1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "frozen_spec_sha256",
+    "aead_profile",
+    "hkdf_profile",
+    "aad_metadata",
+    "wrapped_key_object",
+    "secret_handle_profile",
+    "share_envelope",
+    "freeze_flags"
+  ],
+  "properties": {
+    "frozen_spec_sha256": {"const": "d422b30ec51a95fd515c7e1a069cd223b0a8fce2313366921b1816b5678241f1"},
+    "aead_profile": {"$ref": "#/$defs/aeadProfile"},
+    "hkdf_profile": {"$ref": "#/$defs/hkdfProfile"},
+    "aad_metadata": {"$ref": "#/$defs/metadata"},
+    "wrapped_key_object": {"$ref": "#/$defs/wrappedKeyObject"},
+    "secret_handle_profile": {"$ref": "#/$defs/secretHandleProfile"},
+    "share_envelope": {"$ref": "#/$defs/shareEnvelope"},
+    "freeze_flags": {"$ref": "#/$defs/freezeFlags"}
+  },
+  "$defs": {
+    "aeadProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["AEAD_PROFILE_ID","AEAD_ALGORITHM","AEAD_KEY_SIZE_BYTES","AEAD_NONCE_SIZE_BYTES","AEAD_TAG_SIZE_BYTES","AEAD_NONCE_GENERATION","AEAD_NONCE_STORAGE","AEAD_NONCE_GENERATION_DURING_UNWRAP","AEAD_NONCE_REUSE_SAME_KEY","AEAD_AAD_ENCODING","AEAD_AUTHENTICATION_FAILURE"],
+      "properties": {
+        "AEAD_PROFILE_ID": {"const": "AURUM-V-XCHACHA20-POLY1305-v1"},
+        "AEAD_ALGORITHM": {"const": "crypto_aead_xchacha20poly1305_ietf"},
+        "AEAD_KEY_SIZE_BYTES": {"const": 32},
+        "AEAD_NONCE_SIZE_BYTES": {"const": 24},
+        "AEAD_TAG_SIZE_BYTES": {"const": 16},
+        "AEAD_NONCE_GENERATION": {"const": "CSPRNG_DERIVED_PER_KEY_WRAP"},
+        "AEAD_NONCE_STORAGE": {"const": "STORED_WITH_WRAPPED_KEY_OBJECT"},
+        "AEAD_NONCE_GENERATION_DURING_UNWRAP": {"const": "PROHIBITED"},
+        "AEAD_NONCE_REUSE_SAME_KEY": {"const": "PROHIBITED"},
+        "AEAD_AAD_ENCODING": {"const": "RFC8785_JCS"},
+        "AEAD_AUTHENTICATION_FAILURE": {"const": "REJECT_AND_ZEROISE"}
+      }
+    },
+    "hkdfProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hash","salt_policy","info","output_length_bytes"],
+      "properties": {
+        "hash": {"const": "SHA-256"},
+        "salt_policy": {"const": "DEPLOYMENT_WIDE_RECOVERY_SPECIFIC_CONSTANT"},
+        "info": {"enum": ["AURUM-V/CIL-000/RAK/KEY-WRAP/v1","AURUM-V/CIL-000/SRK/KEY-WRAP/v1"]},
+        "output_length_bytes": {"const": 32}
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authority_epoch","key_id","ledger_genesis_id","scheme_version","secret_role"],
+      "properties": {
+        "authority_epoch": {"type": "string","minLength": 1},
+        "key_id": {"type": "string","format": "uuid"},
+        "ledger_genesis_id": {"type": "string","format": "uuid"},
+        "scheme_version": {"const": "1.0"},
+        "secret_role": {"enum": ["RAK","SRK"]}
+      }
+    },
+    "wrappedKeyObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nonce","ciphertext","tag","metadata"],
+      "properties": {
+        "nonce": {"type": "string","contentEncoding": "base64","description": "Exactly 24 decoded bytes."},
+        "ciphertext": {"type": "string","contentEncoding": "base64"},
+        "tag": {"type": "string","contentEncoding": "base64","description": "Exactly 16 decoded bytes."},
+        "metadata": {"$ref": "#/$defs/metadata"}
+      }
+    },
+    "secretHandleProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["SECRET_HANDLE_INTERNAL_EXPORTABLE","SECRET_HANDLE_REFERENCE_TOKEN_SECRET_BEARING","SECRET_HANDLE_CEREMONY_BOUND","SECRET_HANDLE_SECRET_ID_BOUND","SECRET_HANDLE_ROLE_BOUND","SECRET_HANDLE_EPOCH_BOUND","SECRET_HANDLE_SINGLE_USE","SECRET_HANDLE_REPLAYABLE","SECRET_HANDLE_EXPIRY_REQUIRED","SECRET_HANDLE_MAX_LIFETIME_SECONDS"],
+      "properties": {
+        "SECRET_HANDLE_INTERNAL_EXPORTABLE": {"const": false},
+        "SECRET_HANDLE_REFERENCE_TOKEN_SECRET_BEARING": {"const": false},
+        "SECRET_HANDLE_CEREMONY_BOUND": {"const": true},
+        "SECRET_HANDLE_SECRET_ID_BOUND": {"const": true},
+        "SECRET_HANDLE_ROLE_BOUND": {"const": true},
+        "SECRET_HANDLE_EPOCH_BOUND": {"const": true},
+        "SECRET_HANDLE_SINGLE_USE": {"const": true},
+        "SECRET_HANDLE_REPLAYABLE": {"const": false},
+        "SECRET_HANDLE_EXPIRY_REQUIRED": {"const": true},
+        "SECRET_HANDLE_MAX_LIFETIME_SECONDS": {"const": 86400}
+      }
+    },
+    "shareEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metadata","encrypted_share_payload","encrypted_share_payload_sha256","envelope_signature"],
+      "properties": {
+        "metadata": {"$ref": "#/$defs/metadata"},
+        "encrypted_share_payload": {"type": "string","contentEncoding": "base64"},
+        "encrypted_share_payload_sha256": {"type": "string","pattern": "^[0-9a-f]{64}$"},
+        "envelope_signature": {"type": "string","contentEncoding": "base64","description": "Ed25519 signature over RFC8785-JCS canonical signing object."}
+      }
+    },
+    "freezeFlags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["SSS_ARCHITECTURAL_FIT","SSS_ROLE","SSS_IS_AUTHORITY_SOURCE","THRESHOLD_SATISFACTION_IS_AUTHORITY","SECRET_ENCODING","ARBITRARY_SECRET_FIELD_REDUCTION","RAW_RECONSTRUCTED_SECRET_EXPORT_PRODUCTION","SECRET_HANDLE_INTERNAL_EXPORTABLE","SECRET_HANDLE_REFERENCE_TOKEN_SECRET_BEARING","KEY_WRAP","KEY_DERIVATION","AAD_CANONICAL_ENCODING","SHARE_INTEGRITY","SHARE_PAYLOAD_BOUND_TO_SIGNATURE","SHARE_CONFIDENTIALITY_AT_REST","PRODUCTION_SECRET_OPERATIONS","RECOVERY_FAILURE_MODE","RECOVERY_PATH_BYPASSES_AAL","SPECIFICATION_FREEZE_READINESS"],
+      "properties": {
+        "SSS_ARCHITECTURAL_FIT": {"const": "ESTABLISHED"},
+        "SSS_ROLE": {"const": "RECOVERY_CUSTODY_MECHANISM"},
+        "SSS_IS_AUTHORITY_SOURCE": {"const": false},
+        "THRESHOLD_SATISFACTION_IS_AUTHORITY": {"const": false},
+        "SECRET_ENCODING": {"const": "CANONICAL_AND_INJECTIVE"},
+        "ARBITRARY_SECRET_FIELD_REDUCTION": {"const": "PROHIBITED"},
+        "RAW_RECONSTRUCTED_SECRET_EXPORT_PRODUCTION": {"const": "PROHIBITED"},
+        "SECRET_HANDLE_INTERNAL_EXPORTABLE": {"const": false},
+        "SECRET_HANDLE_REFERENCE_TOKEN_SECRET_BEARING": {"const": false},
+        "KEY_WRAP": {"const": "XCHACHA20_POLY1305_PROFILE_BOUND"},
+        "KEY_DERIVATION": {"const": "HKDF_SHA256"},
+        "AAD_CANONICAL_ENCODING": {"const": "RFC8785_JCS"},
+        "SHARE_INTEGRITY": {"const": "REQUIRED"},
+        "SHARE_PAYLOAD_BOUND_TO_SIGNATURE": {"const": "REQUIRED"},
+        "SHARE_CONFIDENTIALITY_AT_REST": {"const": "REQUIRED"},
+        "PRODUCTION_SECRET_OPERATIONS": {"const": "PROTECTED_NATIVE_OR_HSM_BOUNDARY"},
+        "RECOVERY_FAILURE_MODE": {"const": "SILENCE"},
+        "RECOVERY_PATH_BYPASSES_AAL": {"const": false},
+        "SPECIFICATION_FREEZE_READINESS": {"const": "FROZEN"}
+      }
+    }
+  }
+}
