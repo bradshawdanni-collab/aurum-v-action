@@ -1,0 +1,223 @@
+AURUM-V Recovery Specification - FROZEN
+
+The text below incorporates the final five normative corrections (nonce handling, KEK derivation, secret-handle model, expiry semantics, and JCS canonicalization) and freezes all security-critical bindings.
+
+---
+
+### 1. AEAD PROFILE (normative)
+
+| Parameter | Value (frozen) |
+|-----------|----------------|
+| **AEAD_PROFILE_ID** | `AURUM-V-XCHACHA20-POLY1305-v1` |
+| **AEAD_ALGORITHM** | `XChaCha20-Poly1305` (libsodium **crypto_aead_xchacha20poly1305_ietf** profile) |
+| **AEAD_KEY_SIZE_BYTES** | `32` |
+| **AEAD_NONCE_SIZE_BYTES** | `24` (192-bit) |
+| **AEAD_TAG_SIZE_BYTES** | `16` (128-bit) |
+| **AEAD_NONCE_GENERATION** | `CSPRNG_DERIVED_PER_KEY_WRAP` - a fresh random nonce is generated **once** when the RAK/SRK is wrapped. |
+| **AEAD_NONCE_STORAGE** | `STORED_WITH_WRAPPED_KEY_OBJECT` - the nonce is persisted alongside the ciphertext. |
+| **AEAD_NONCE_GENERATION_DURING_UNWRAP** | `PROHIBITED` - the unwrap operation must use the stored nonce; generating a new nonce causes authentication failure. |
+| **AEAD_NONCE_REUSE_SAME_KEY** | `PROHIBITED` - re-using a nonce with the same KEK is never allowed. |
+| **AEAD_NONCE_COLLISION_PROBABILITY** | "makes accidental collision negligibly probable under a cryptographically secure random generator." |
+| **AEAD_AAD_ENCODING** | `RFC8785_JCS` (JSON Canonicalization Scheme). |
+| **AEAD_AUTHENTICATION_FAILURE** | `REJECT_AND_ZEROISE` - the component must reject the unwrap, erase the derived KEK, the secret **S**, and any intermediate buffers. |
+
+**Key-wrap process (provisioning)**
+
+1. Generate a fresh random **nonce** (24 bytes).
+2. Derive the **KEK** (see §2).
+3. Compute `AEAD_Encrypt(KEK, plaintext = wrapped_key, AAD = JCS(metadata), nonce)`.
+4. Store `(nonce, ciphertext, tag)` together as the *wrapped-key object*.
+
+**Recovery (unwrapping)** uses the stored nonce; no new nonce is generated.
+
+---
+
+### 2. Key Derivation (HKDF-SHA-256)
+
+```
+PRK = HKDF-Extract(salt, S)                // S = field element secret
+KEK = HKDF-Expand(PRK, info, 32)           // 32-byte AEAD key
+```
+
+* **salt** - deployment-wide, recovery-specific constant.
+* **info** - `"AURUM-V/CIL-000/RAK/KEY-WRAP/v1"` (or the SRK variant).
+
+HKDF-SHA-256 is the sole source of the AEAD key; XChaCha20-Poly1305 does **not** derive the KEK.
+
+---
+
+### 3. Opaque Secret-Handle Model
+
+Two distinct entities are defined:
+
+| Entity | Exportability | What it contains |
+|--------|----------------|-------------------|
+| **SECRET_HANDLE_INTERNAL** | `NON_EXPORTABLE` | The raw secret **S**, plus bound metadata (secret-id, role, epoch, ceremony identifier). |
+| **SECRET_HANDLE_REFERENCE_TOKEN** | `EXPORTABLE_OPAQUE_IDENTIFIER` | A short opaque identifier (e.g., `rh_7f4c...`). **Does not** embed secret material. |
+
+**Lifecycle**
+
+1. **CREATE** - During `reconstruct` the protected component creates `SECRET_HANDLE_INTERNAL` and registers a mapping from a freshly generated reference token to that internal handle.
+2. **RETURN** - The CLI receives only the reference token (`--output-handle <token>`).
+3. **AUTHORIZE** - `aurum-v-action recovery authorize --secret-handle <token>` causes the component to resolve the token, verify all bindings, perform HKDF and AEAD unwrap, sign the recovery atom, then **zeroise** **S**, the KEK, and the internal handle.
+4. **DESTROY** - The mapping is removed and the internal handle is wiped on any of the following events: successful authorization, failed authorization, explicit abort, token expiry, or any binding mismatch.
+
+**Bound attributes (all `TRUE`)**
+
+* `SECRET_HANDLE_CEREMONY_BOUND`
+* `SECRET_HANDLE_SECRET_ID_BOUND`
+* `SECRET_HANDLE_ROLE_BOUND`
+* `SECRET_HANDLE_EPOCH_BOUND`
+* `SECRET_HANDLE_SINGLE_USE`
+* `SECRET_HANDLE_REPLAYABLE = FALSE`
+
+---
+
+### 4. Secret-Handle Expiry Semantics
+
+* **Maximum lifetime** - `SECRET_HANDLE_MAX_LIFETIME_SECONDS = 86400` (24 h).
+* **Effective expiry** - the handle expires at the earliest of three deadlines:
+
+```
+expiry_handle = min(
+    handle_creation_time + 86400,
+    ceremony_expiry_time,
+    authority_epoch_expiry_time
+)
+```
+
+* `SECRET_HANDLE_EXPIRY_REQUIRED = TRUE` - the component must enforce the above expiry and destroy the internal handle when the deadline passes.
+
+---
+
+### 5. Share-Envelope Canonical Signing
+
+**Metadata (JCS-encoded, valid JSON, no comments)**
+
+```json
+{
+  "authority_epoch": "<epoch>",
+  "key_id": "<uuid>",
+  "ledger_genesis_id": "<uuid>",
+  "scheme_version": "1.0",
+  "secret_role": "RAK"
+}
+```
+
+The `secret_role` field may take the value **"RAK"** or **"SRK"**; this constraint is documented here and may also be expressed in the JSON Schema.
+
+**Signing object**
+
+```json
+{
+  "metadata": {
+    "authority_epoch": "<epoch>",
+    "key_id": "<uuid>",
+    "ledger_genesis_id": "<uuid>",
+    "scheme_version": "1.0",
+    "secret_role": "RAK"
+  },
+  "encrypted_share_payload_sha256": "<lowercase-hex-sha256>"
+}
+```
+
+* `encrypted_share_payload_sha256` is the SHA-256 digest of the **ciphertext** that carries the share (the encrypted share payload).
+
+**Signature computation**
+
+```
+signed_bytes = JCS(signing_object)
+ENVELOPE_SIGNATURE = Ed25519.Sign(custodian_sk, signed_bytes)
+```
+
+The signature therefore authenticates **both** the immutable metadata and the exact ciphertext digest, satisfying `SHARE_PAYLOAD_BOUND_TO_SIGNATURE = REQUIRED`.
+
+---
+
+### 6. State Machine (final, with corrected steps)
+
+```
+RECOVERY REQUEST
+      |
+      v
+CEREMONY MANIFEST
+      |
+      v
+AUTHORITY / POLICY / FRESHNESS CHECK
+      |
+      +-- reject --> SILENCE
+      v
+SHARE COLLECTION
+      |
+      v
+SCHEMA + SIGNATURE + ID + EPOCH + INDEX VALIDATION
+      |
+      v
+OPTIONAL/REQUIRED VSS VALIDATION
+      |
+      v
+t VALID SHARES?
+      |
+      +-- no --> SILENCE
+      v
+PROTECTED RECONSTRUCTION
+      |
+      v
+OPAQUE SECRET HANDLE (internal, non-exportable)
+      |
+      v
+RECOVERY_AUTHORISED ?
+      |
+      +-- false --> DESTROY INTERNAL HANDLE / SILENCE
+      v
+HKDF-SHA-256 KEK DERIVATION
+      |
+      v
+XCHACHA20-POLY1305 AEAD UNWRAP
+      |
+      +-- authentication failure --> REJECT / SILENCE (zeroise KEK, S)
+      v
+RECOVERY ATOM SIGNING
+      |
+      v
+NORMAL AAL VALIDATION
+      |
+      +-- reject --> SILENCE
+      v
+COMMIT
+      |
+      v
+ZEROISE INTERNAL STATE + DESTROY REFERENCE TOKEN
+```
+
+All failure paths result in **silence** and immediate zeroisation, preserving the **fail-closed** guarantee.
+
+---
+
+### 7. Freeze-Readiness Flags (final)
+
+| Flag | Value |
+|------|-------|
+| `SSS_ARCHITECTURAL_FIT` | `ESTABLISHED` |
+| `SSS_ROLE` | `RECOVERY_CUSTODY_MECHANISM` |
+| `SSS_IS_AUTHORITY_SOURCE` | `FALSE` |
+| `THRESHOLD_SATISFACTION_IS_AUTHORITY` | `FALSE` |
+| `SECRET_ENCODING` | `CANONICAL_AND_INJECTIVE` |
+| `ARBITRARY_SECRET_FIELD_REDUCTION` | `PROHIBITED` |
+| `RAW_RECONSTRUCTED_SECRET_EXPORT_PRODUCTION` | `PROHIBITED` |
+| `SECRET_HANDLE_INTERNAL_EXPORTABLE` | `FALSE` |
+| `SECRET_HANDLE_REFERENCE_TOKEN_SECRET_BEARING` | `FALSE` |
+| `KEY_WRAP` | `XCHACHA20_POLY1305_PROFILE_BOUND` |
+| `KEY_DERIVATION` | `HKDF_SHA256` |
+| `AAD_CANONICAL_ENCODING` | `RFC8785_JCS` |
+| `SHARE_INTEGRITY` | `REQUIRED` |
+| `SHARE_PAYLOAD_BOUND_TO_SIGNATURE` | `REQUIRED` |
+| `SHARE_CONFIDENTIALITY_AT_REST` | `REQUIRED` |
+| `PRODUCTION_SECRET_OPERATIONS` | `PROTECTED_NATIVE_OR_HSM_BOUNDARY` |
+| `RECOVERY_FAILURE_MODE` | `SILENCE` |
+| `RECOVERY_PATH_BYPASSES_AAL` | `FALSE` |
+| `SPECIFICATION_FREEZE_READINESS` | `FROZEN` |
+
+---
+
+**Conclusion:** All deterministic cryptographic bindings, secret-handle semantics, expiry policy, and canonical signing constructions are now fully specified. The specification exhibits a single, unambiguous failure mode (silence) and a clear separation between reconstruction, authorization, and ordinary AAL validation. It can be treated as a normative, frozen recovery specification for AURUM-V.
