@@ -6,6 +6,8 @@
 
 A fail-closed Docker-based GitHub Action that verifies a signed AURUM-V approval bundle and binds it to the exact repository, pull request and head commit SHA.
 
+**New to the wider system? Read the [AURUM-V public architecture overview](AURUM_V_OVERVIEW.md).**
+
 **Need implementation support? [Book an AURUM-V Merge Control Pilot](PILOT.md).**
 
 ## Quick start
