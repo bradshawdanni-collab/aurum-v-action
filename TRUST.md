@@ -64,10 +64,12 @@ The public implementation, demo, CI results, and any future bounded replay do no
 2. Inspect or run the external installation proof.
 3. Review the exact scope and price in [PILOT.md](PILOT.md).
 4. Check the independent-review issue for the current attestation state.
-5. Open a non-sensitive commercial enquiry only when the evidence boundary is acceptable.
+5. Book a short risk review only when the evidence boundary is acceptable.
 
-## Start an enquiry
+## Start
 
-[Open an ELLOXA commercial enquiry](https://github.com/bradshawdanni-collab/aurum-v-action/issues/new?template=commercial-enquiry.md)
+[**Book a 15-minute ELLOXA workflow risk review →**](https://cal.com/aurum-v-elloxa/elloxa-workflow-risk-review?layout=mobile&overlayCalendar=true)
+
+Prefer written first contact? [Open an ELLOXA commercial enquiry](https://github.com/bradshawdanni-collab/aurum-v-action/issues/new?template=commercial-enquiry.md).
 
 Do not post credentials, private keys, confidential repository details, customer data, or unpublished vulnerabilities in a public issue. Sensitive scope is handled only after a private channel is agreed.
