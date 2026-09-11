@@ -7,6 +7,8 @@ assignees: ""
 
 # ELLOXA commercial enquiry
 
+Prefer a short call? [Book a 15-minute ELLOXA workflow risk review](https://cal.com/aurum-v-elloxa/elloxa-workflow-risk-review?layout=mobile&overlayCalendar=true).
+
 > **Public issue safety:** do not include credentials, private keys, customer data, confidential repository details, unpublished vulnerabilities, or other sensitive information. Use only non-sensitive scope information here. A private channel can be agreed before sensitive details are exchanged.
 
 ## Offer
