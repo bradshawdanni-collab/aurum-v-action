@@ -1,18 +1,20 @@
-# AURUM-V Merge Control Pilot
+# ELLOXA Merge Control Pilot
 
-A fixed-scope implementation package for teams that need stronger control over merge authorization, tamper evidence, and auditability in GitHub.
+**A$1,500 fixed · one repository · one signed approval policy · delivered within 5 business days after access and requirements are confirmed**
+
+The ELLOXA Merge Control Pilot is the commercial implementation package built around the public AURUM-V Merge Gate verification Action in this repository.
 
 ## The problem
 
 GitHub branch protection and required checks help control merges, but they do not by themselves prove that a specific approval decision was signed, bound to the exact repository, pull request, and head commit SHA, and remained unchanged before execution.
 
-AURUM-V adds a fail-closed verification layer that checks signed authorization evidence before downstream merge or deployment steps proceed.
+The AURUM-V verification Action adds a fail-closed evidence check before downstream merge or deployment steps proceed. ELLOXA packages that capability into a fixed-scope implementation and handover.
 
 ## The outcome
 
 At the end of the pilot, one selected GitHub repository will have:
 
-- AURUM-V Merge Gate installed;
+- the public AURUM-V Merge Gate Action installed;
 - one signed approval policy implemented;
 - repository, pull-request, and head-SHA binding configured;
 - a demonstrated valid authorization path;
@@ -41,10 +43,6 @@ At the end of the pilot, one selected GitHub repository will have:
 
 Additional work can be quoted separately after the pilot.
 
-## Delivery
-
-Delivered within 5 business days after repository access and requirements are confirmed.
-
 ## Price
 
 **A$1,500 fixed**
@@ -53,18 +51,34 @@ The price covers one repository and one approval policy.
 
 ## What the client provides
 
-- Access to the selected GitHub repository
+- Access to the selected GitHub repository after scope is agreed
 - A technical contact who can confirm the intended approval rule
 - Availability to review the final demonstration and handover
 
-## Contact
+## How to buy
 
-To discuss scope or request a pilot, open a GitHub issue in this repository with the title:
+1. [Book a 15-minute ELLOXA workflow risk review](https://cal.com/aurum-v-elloxa/elloxa-workflow-risk-review?layout=mobile&overlayCalendar=true).
+2. Describe the repository and approval problem using only non-sensitive information.
+3. Confirm the selected repository, approval rule, delivery window, and private channel for any sensitive details.
+4. Begin delivery after scope and access are agreed.
 
-`AURUM-V Pilot Enquiry`
+Prefer an asynchronous first contact? [Open an ELLOXA commercial enquiry](https://github.com/bradshawdanni-collab/aurum-v-action/issues/new?template=commercial-enquiry.md).
 
-Do not include credentials, private keys, sensitive repository details, or confidential information in a public issue. Sensitive details can be exchanged through an agreed private channel after initial contact.
+Do **not** post credentials, signing keys, customer data, confidential repository details, or unpublished vulnerabilities in the public enquiry.
 
-## Book an AURUM-V Merge Control Pilot
+## Verify before you buy
 
-Start with one repository, one policy, and a complete fail-closed authorization demonstration.
+You do not need to rely on a marketing claim.
+
+- Review the public Action source in this repository.
+- Review the [external installation proof](https://github.com/bradshawdanni-collab/aurum-v-action-demo).
+- Read the bounded [Trust & Evidence](TRUST.md) page.
+- Check the [independent Step-7 reviewer request](https://github.com/bradshawdanni-collab/aurum-v-action/issues/3) for the current attestation state.
+
+The independent Step-7 reviewer condition remains pending until a qualifying third party submits a valid bounded attestation. The pilot does not claim universal correctness, regulatory certification, or production fitness beyond the implemented and demonstrated scope.
+
+## Start
+
+[**Book a 15-minute ELLOXA workflow risk review →**](https://cal.com/aurum-v-elloxa/elloxa-workflow-risk-review?layout=mobile&overlayCalendar=true)
+
+Or [open a non-sensitive commercial enquiry](https://github.com/bradshawdanni-collab/aurum-v-action/issues/new?template=commercial-enquiry.md).
