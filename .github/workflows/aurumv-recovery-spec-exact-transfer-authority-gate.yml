@@ -1,16 +1,10 @@
 name: AURUM-V recovery spec exact-transfer authority gate
 
 on:
-  push:
-    paths:
-      - "spec/AURUMV_RECOVERY_SPECIFICATION_FROZEN.txt"
-      - "spec/AURUMV_RECOVERY_AUTHORITY_MANIFEST.toml"
-      - ".github/workflows/aurumv-recovery-spec-exact-transfer-authority-gate.yml"
   pull_request:
-    paths:
-      - "spec/AURUMV_RECOVERY_SPECIFICATION_FROZEN.txt"
-      - "spec/AURUMV_RECOVERY_AUTHORITY_MANIFEST.toml"
-      - ".github/workflows/aurumv-recovery-spec-exact-transfer-authority-gate.yml"
+  push:
+    branches:
+      - main
 
 permissions:
   contents: read
