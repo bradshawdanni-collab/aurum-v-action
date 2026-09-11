@@ -6,7 +6,7 @@
 
 A fail-closed Docker-based GitHub Action that verifies a signed AURUM-V approval bundle and binds it to the exact repository, pull request and head commit SHA.
 
-**Need implementation support? [Book an AURUM-V Merge Control Pilot](PILOT.md).**
+**Need implementation support? [Start an ELLOXA Merge Control Pilot](PILOT.md) · [Review trust & evidence](TRUST.md).**
 
 ## Quick start
 
