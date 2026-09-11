@@ -99,7 +99,7 @@ Every formally released artifact should be traceable. A public release record ca
 ```json
 {
   "artifact_id": "EXAMPLE_ARTIFACT_V1",
-  "source_repository": "aurum-v-kernel",
+  "source_repository": "<controlled-source-repository>",
   "source_commit": "<40-character commit SHA>",
   "source_path": "<path>",
   "release_commit": "<40-character commit SHA>",
