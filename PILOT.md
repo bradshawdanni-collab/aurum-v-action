@@ -57,10 +57,12 @@ The price covers one repository and one approval policy.
 
 ## How to buy
 
-1. [Open an ELLOXA commercial enquiry](https://github.com/bradshawdanni-collab/aurum-v-action/issues/new?template=commercial-enquiry.md).
-2. Share only non-sensitive scope information in the public issue.
+1. [Book a 15-minute ELLOXA workflow risk review](https://cal.com/aurum-v-elloxa/elloxa-workflow-risk-review?layout=mobile&overlayCalendar=true).
+2. Describe the repository and approval problem using only non-sensitive information.
 3. Confirm the selected repository, approval rule, delivery window, and private channel for any sensitive details.
 4. Begin delivery after scope and access are agreed.
+
+Prefer an asynchronous first contact? [Open an ELLOXA commercial enquiry](https://github.com/bradshawdanni-collab/aurum-v-action/issues/new?template=commercial-enquiry.md).
 
 Do **not** post credentials, signing keys, customer data, confidential repository details, or unpublished vulnerabilities in the public enquiry.
 
@@ -77,4 +79,6 @@ The independent Step-7 reviewer condition remains pending until a qualifying thi
 
 ## Start
 
-[**Start an ELLOXA Merge Control Pilot enquiry →**](https://github.com/bradshawdanni-collab/aurum-v-action/issues/new?template=commercial-enquiry.md)
+[**Book a 15-minute ELLOXA workflow risk review →**](https://cal.com/aurum-v-elloxa/elloxa-workflow-risk-review?layout=mobile&overlayCalendar=true)
+
+Or [open a non-sensitive commercial enquiry](https://github.com/bradshawdanni-collab/aurum-v-action/issues/new?template=commercial-enquiry.md).
